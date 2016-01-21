@@ -26,6 +26,26 @@ ValidatorContext.prototype.validateArrayLength = function validateArrayLength(da
 			}
 		}
 	}
+	// modification to check if the actual and expected number of items equal
+	if (schema.minItems === undefined && schema.maxItems === undefined) {
+		if (schema.items !== undefined || schema.type === "array")  {
+		  var schema_items_length = 0; // in this case schema.empty = true and schema.type="array"
+		  if (schema.items !== undefined) {
+			schema_items_length = schema.items.length;
+		  }
+		  if (data.length < schema_items_length) {
+			error = (this.createError(ErrorCodes.ARRAY_LENGTH_SHORT, {length: data.length, minimum: schema_items_length})).prefixWith(null, "items");
+			if (this.handleError(error)) {
+			  return error;
+			}
+		  } else if (data.length > schema_items_length) {
+			error = (this.createError(ErrorCodes.ARRAY_LENGTH_LONG, {length: data.length, maximum: schema_items_length})).prefixWith(null, "items");
+			if (this.handleError(error)) {
+			  return error;
+			}
+		  }
+		}
+	}
 	return null;
 };
 
